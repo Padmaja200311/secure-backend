@@ -3,7 +3,6 @@ import uuid
 
 from fastapi import HTTPException, UploadFile
 
-
 UPLOAD_DIR = "uploads"
 MAX_FILE_SIZE = 5 * 1024 * 1024
 
@@ -16,8 +15,7 @@ ALLOWED_EXTENSIONS = {
 
 
 def save_file(file: UploadFile):
-
-    extension = os.path.splitext(file.filename)[1].lower()
+    extension = os.path.splitext(file.filename or "")[1].lower()
 
     if extension not in ALLOWED_EXTENSIONS:
         raise HTTPException(
@@ -35,12 +33,12 @@ def save_file(file: UploadFile):
 
     unique_filename = f"{uuid.uuid4()}{extension}"
 
+    os.makedirs(UPLOAD_DIR, exist_ok=True)
+
     file_path = os.path.join(
         UPLOAD_DIR,
         unique_filename
     )
-
-    os.makedirs(UPLOAD_DIR, exist_ok=True)
 
     with open(file_path, "wb") as buffer:
         buffer.write(file_data)

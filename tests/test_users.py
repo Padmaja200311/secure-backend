@@ -44,6 +44,8 @@ def test_admin_access_denied_for_user():
         }
     )
 
+    assert login_response.status_code == 200
+
     token = login_response.json()["access_token"]
 
     response = client.get(
@@ -54,3 +56,15 @@ def test_admin_access_denied_for_user():
     )
 
     assert response.status_code == 403
+
+
+def test_health_check():
+
+    response = client.get("/health")
+
+    assert response.status_code == 200
+
+    data = response.json()
+
+    assert data["status"] == "healthy"
+    assert data["database"] == "connected"
